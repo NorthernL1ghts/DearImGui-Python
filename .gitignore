@@ -1,0 +1,10 @@
+# Binaries for programs and plugins
+bin/
+bin-int/
+
+# Build directory
+build/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
