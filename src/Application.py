@@ -1,19 +1,27 @@
+import glfw
 from OpenGL.GL import *
 import imgui
 from imgui.integrations.glfw import GlfwRenderer
 from DearImGuiLayer import DearImGuiLayer
-from Window import Window
 
 class Application:
     def __init__(self):
-        self.window = Window()
+        if not glfw.init():
+            raise Exception("GLFW initialization failed")
+
+        self.window = glfw.create_window(1280, 720, "GLFW + Dear ImGui", None, None)
+        if not self.window:
+            glfw.terminate()
+            raise Exception("GLFW window creation failed")
+
+        glfw.make_context_current(self.window)
         imgui.create_context()
         self.imgui_layer = DearImGuiLayer()
-        self.impl = GlfwRenderer(self.window.window)
+        self.impl = GlfwRenderer(self.window)
 
     def run(self):
-        while not self.window.should_close():
-            self.window.poll_events()
+        while not glfw.window_should_close(self.window):
+            glfw.poll_events()
             self.impl.process_inputs()
             imgui.new_frame()
 
@@ -24,13 +32,13 @@ class Application:
 
             imgui.render()
             self.impl.render(imgui.get_draw_data())
-            self.window.swap_buffers()
+            glfw.swap_buffers(self.window)
 
         self.shutdown()
 
     def shutdown(self):
         self.impl.shutdown()
-        self.window.terminate()
+        glfw.terminate()
 
 if __name__ == "__main__":
     app = Application()
