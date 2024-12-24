@@ -17,30 +17,32 @@ class KeyCodes(Enum):
     RIGHT_SHIFT = glfw.KEY_RIGHT_SHIFT
     LEFT_CONTROL = glfw.KEY_LEFT_CONTROL
     RIGHT_CONTROL = glfw.KEY_RIGHT_CONTROL
-    TAB = glfw.KEY_TAB
-    CAPS_LOCK = glfw.KEY_CAPS_LOCK
-    NUM_LOCK = glfw.KEY_NUM_LOCK
-    SCROLL_LOCK = glfw.KEY_SCROLL_LOCK
-    PRINT_SCREEN = glfw.KEY_PRINT_SCREEN
-    PAUSE = glfw.KEY_PAUSE
-    INSERT = glfw.KEY_INSERT
-    DELETE = glfw.KEY_DELETE
-    HOME = glfw.KEY_HOME
-    END = glfw.KEY_END
-    PAGE_UP = glfw.KEY_PAGE_UP
-    PAGE_DOWN = glfw.KEY_PAGE_DOWN
-    F1 = glfw.KEY_F1
-    F2 = glfw.KEY_F2
-    F3 = glfw.KEY_F3
-    F4 = glfw.KEY_F4
-    F5 = glfw.KEY_F5
-    F6 = glfw.KEY_F6
-    F7 = glfw.KEY_F7
-    F8 = glfw.KEY_F8
-    F9 = glfw.KEY_F9
-    F10 = glfw.KEY_F10
-    F11 = glfw.KEY_F11
-    F12 = glfw.KEY_F12
+    A = glfw.KEY_A
+    B = glfw.KEY_B
+    C = glfw.KEY_C
+    D = glfw.KEY_D
+    E = glfw.KEY_E
+    F = glfw.KEY_F
+    G = glfw.KEY_G
+    H = glfw.KEY_H
+    I = glfw.KEY_I
+    J = glfw.KEY_J
+    K = glfw.KEY_K
+    L = glfw.KEY_L
+    M = glfw.KEY_M
+    N = glfw.KEY_N
+    O = glfw.KEY_O
+    P = glfw.KEY_P
+    Q = glfw.KEY_Q
+    R = glfw.KEY_R
+    S = glfw.KEY_S
+    T = glfw.KEY_T
+    U = glfw.KEY_U
+    V = glfw.KEY_V
+    W = glfw.KEY_W
+    X = glfw.KEY_X
+    Y = glfw.KEY_Y
+    Z = glfw.KEY_Z
     UP = glfw.KEY_UP
     DOWN = glfw.KEY_DOWN
     LEFT = glfw.KEY_LEFT
@@ -112,7 +114,7 @@ class Event:
 
     def HandleWindowCloseEvent(self):
         global g_ApplicationRunning
-        print("OnWindowCloseEvent")
+        print("Window is closing")
         g_ApplicationRunning = False
 
     def OnKeyEvent(self, window, key, scancode, action, mods):
