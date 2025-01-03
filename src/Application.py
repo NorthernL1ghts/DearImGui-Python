@@ -4,9 +4,14 @@ import OpenGL.GL as gl
 import imgui
 from imgui.integrations.glfw import GlfwRenderer
 from enum import Enum
+import time
 
 g_ApplicationRunning = True
 
+# Constant for Version
+VERSION = "1.0.0"
+
+# Key and Mouse Codes Enums
 class KeyCodes(Enum):
     SPACE = glfw.KEY_SPACE
     ENTER = glfw.KEY_ENTER
@@ -49,82 +54,82 @@ class KeyCodes(Enum):
     RIGHT = glfw.KEY_RIGHT
 
 class MouseCodes(Enum):
-    LEFT = glfw.MOUSE_BUTTON_LEFT
-    RIGHT = glfw.MOUSE_BUTTON_RIGHT
-    MIDDLE = glfw.MOUSE_BUTTON_MIDDLE
+    LEFT_BUTTON = glfw.MOUSE_BUTTON_LEFT
+    RIGHT_BUTTON = glfw.MOUSE_BUTTON_RIGHT
+    MIDDLE_BUTTON = glfw.MOUSE_BUTTON_MIDDLE
 
-class ApplicationSpecification:
-    def __init__(self, name, version, width, height, description):
-        self.m_Name = name
-        self.m_Version = version
-        self.m_Width = width
-        self.m_Height = height
-        self.m_Description = description
+# Application Configuration Class
+class AppConfiguration:
+    def __init__(self, app_name, window_width, window_height, app_description):
+        self.AppName = app_name
+        self.Version = VERSION
+        self.WindowWidth = window_width
+        self.WindowHeight = window_height
+        self.AppDescription = app_description
 
-class DearImGuiLayer:
+# Dear ImGui Integration Class
+class DearImGuiRenderer:
     def __init__(self, window):
-        self.m_Window = window
-        self.m_Impl = None
+        self.Window = window
+        self.RendererImplementation = None
 
-    def InitializeImGui(self):
+    def SetupDearImGui(self):
         imgui.create_context()
-        self.m_Impl = GlfwRenderer(self.m_Window)
+        self.RendererImplementation = GlfwRenderer(self.Window)
 
-    def Render(self, spec):
-        self.m_Impl.process_inputs()
+    def RenderUI(self, config):
+        self.RendererImplementation.process_inputs()
         imgui.new_frame()
 
-        imgui.begin("Demo Window")
-        imgui.text("Hello, World!")
-        imgui.text(f"App Name: {spec.m_Name}")
-        imgui.text(f"Version: {spec.m_Version}")
-        imgui.text(f"Description: {spec.m_Description}")
+        imgui.begin("Application Info")
+        imgui.text(f"App Name: {config.AppName}")
+        imgui.text(f"Version: {config.Version}")
+        imgui.text(f"Description: {config.AppDescription}")
         imgui.end()
 
         imgui.render()
-        self.m_Impl.render(imgui.get_draw_data())
+        self.RendererImplementation.render(imgui.get_draw_data())
 
-    def Shutdown(self):
-        self.m_Impl.shutdown()
+    def Cleanup(self):
+        self.RendererImplementation.shutdown()
 
-class Event:
+# Event Handling Class
+class EventHandler:
     def __init__(self, window):
-        self.m_Window = window
-        self.m_EventHandlers = []
+        self.Window = window
+        self.EventCallbacks = []
 
-        glfw.set_window_size_callback(self.m_Window, self.OnWindowResize)
-        glfw.set_window_close_callback(self.m_Window, self.OnWindowClose)
-        glfw.set_key_callback(self.m_Window, self.OnKeyEvent)
-        glfw.set_mouse_button_callback(self.m_Window, self.OnMouseClick)
-        glfw.set_scroll_callback(self.m_Window, self.OnScroll)
+        glfw.set_window_size_callback(self.Window, self.OnWindowResize)
+        glfw.set_window_close_callback(self.Window, self.OnWindowClose)
+        glfw.set_key_callback(self.Window, self.OnKeyPress)
+        glfw.set_mouse_button_callback(self.Window, self.OnMouseClick)
+        glfw.set_scroll_callback(self.Window, self.OnMouseScroll)
 
-    def RegisterEventHandler(self, handler):
-        self.m_EventHandlers.append(handler)
+    def RegisterCallback(self, callback):
+        self.EventCallbacks.append(callback)
 
-    def HandleEvents(self):
-        for handler in self.m_EventHandlers:
-            handler()
+    def ProcessEvents(self):
+        glfw.poll_events()  # Ensures events are processed
+        for callback in self.EventCallbacks:
+            callback()
 
     def OnWindowResize(self, window, width, height):
         print(f"Window resized: {width}x{height}")
         gl.glViewport(0, 0, width, height)
 
     def OnWindowClose(self, window):
-        self.HandleWindowCloseEvent()
-
-    def HandleWindowCloseEvent(self):
         global g_ApplicationRunning
         print("Window is closing")
         g_ApplicationRunning = False
 
-    def OnKeyEvent(self, window, key, scancode, action, mods):
+    def OnKeyPress(self, window, key, scancode, action, mods):
         try:
             key_code = KeyCodes(key)
-            self.HandleKeyEvent(key_code, action, mods)
+            self.HandleKeyPressEvent(key_code, action, mods)
         except ValueError:
             print(f"Unhandled key code: {key}")
 
-    def HandleKeyEvent(self, key, action, mods):
+    def HandleKeyPressEvent(self, key, action, mods):
         key_name = key.name if key in KeyCodes else glfw.get_key_name(key.value, 0)
         action_name = self.GetActionName(action)
         print(f"Key event: {key_name}, action: {action_name}, mods: {mods}")
@@ -148,38 +153,45 @@ class Event:
     def HandleMouseClickEvent(self, button):
         button_name = button.name if button in MouseCodes else "Unknown"
         print(f"Mouse button clicked: {button_name}")
-        if button == MouseCodes.LEFT:
+        if button == MouseCodes.LEFT_BUTTON:
             print("Left mouse button clicked!")
 
-    def OnScroll(self, window, xoffset, yoffset):
-        self.HandleScrollEvent(xoffset, yoffset)
+    def OnMouseScroll(self, window, xoffset, yoffset):
+        self.HandleMouseScrollEvent(xoffset, yoffset)
 
-    def HandleScrollEvent(self, xoffset, yoffset):
+    def HandleMouseScrollEvent(self, xoffset, yoffset):
         print(f"Scrolled: xoffset={xoffset}, yoffset={yoffset}")
         if yoffset > 0:
             print("Scrolled up!")
         else:
             print("Scrolled down!")
 
+# Main Application Class
 class Application:
-    def __init__(self, spec):
-        self.m_Spec = spec
+    def __init__(self, config):
+        self.Config = config
+        self.LastUpdateTime = time.time()
+        self.UpdateInterval = 1.0 / 60.0  # 60 FPS
+        self.LastEventTime = time.time()
 
         if not self.InitializeGLFW():
             print("Failed to initialize GLFW")
             sys.exit(1)
 
-        self.m_Window = self.CreateWindow(self.m_Spec.m_Width, self.m_Spec.m_Height, self.m_Spec.m_Name)
-        if not self.m_Window:
+        self.Window = self.CreateWindow(self.Config.WindowWidth, self.Config.WindowHeight, self.Config.AppName)
+        if not self.Window:
             glfw.terminate()
             print("Failed to create window")
             sys.exit(1)
 
-        glfw.make_context_current(self.m_Window)
+        glfw.make_context_current(self.Window)
 
-        self.m_ImGuiLayer = DearImGuiLayer(self.m_Window)
-        self.m_ImGuiLayer.InitializeImGui()
-        self.m_Event = Event(self.m_Window)
+        self.DearImGuiRenderer = DearImGuiRenderer(self.Window)
+        self.DearImGuiRenderer.SetupDearImGui()
+        self.EventHandler = EventHandler(self.Window)
+
+        # Register default events
+        self.RegisterDefaultEvents()
 
     def InitializeGLFW(self):
         return glfw.init()
@@ -187,30 +199,57 @@ class Application:
     def CreateWindow(self, width, height, name):
         return glfw.create_window(width, height, name, None, None)
 
+    def RegisterDefaultEvents(self):
+        # Register custom events for application ticks and updates
+        self.EventHandler.RegisterCallback(self.OnAppTick)
+        self.EventHandler.RegisterCallback(self.OnAppUpdate)
+
+    def OnAppTick(self):
+        """Called every frame to handle logic at 60 FPS."""
+        print("OnAppTick - Handle Application Logic")
+
+    def OnAppUpdate(self):
+        """Called every frame to handle updates at 60 FPS."""
+        print("OnAppUpdate - Handle Updates")
+
     def Run(self):
         global g_ApplicationRunning
-        while not glfw.window_should_close(self.m_Window) and g_ApplicationRunning:
-            glfw.poll_events()
-            self.m_ImGuiLayer.Render(self.m_Spec)
+        while not glfw.window_should_close(self.Window) and g_ApplicationRunning:
+            current_time = time.time()
+            elapsed_time = current_time - self.LastUpdateTime
 
-            gl.glClearColor(1.0, 0.0, 1.0, 1.0)
-            gl.glClear(gl.GL_COLOR_BUFFER_BIT)
-            glfw.swap_buffers(self.m_Window)
+            # Only call events when enough time has passed (60 FPS)
+            if elapsed_time >= self.UpdateInterval:
+                self.EventHandler.ProcessEvents()
 
-        self.m_ImGuiLayer.Shutdown()
-        glfw.terminate()
+                # Update UI and application state
+                self.DearImGuiRenderer.RenderUI(self.Config)
 
+                gl.glClearColor(1.0, 0.0, 1.0, 1.0)
+                gl.glClear(gl.GL_COLOR_BUFFER_BIT)
+                glfw.swap_buffers(self.Window)
+
+                # Update the last time to current
+                self.LastUpdateTime = current_time
+
+            # Ensure that sleep length is non-negative
+            sleep_time = self.UpdateInterval - elapsed_time
+            if sleep_time > 0:
+                time.sleep(sleep_time)
+
+
+
+# EntryPoint Class to Run the Application
 class EntryPoint:
     @staticmethod
     def Main():
-        spec = ApplicationSpecification(
-            name="DearImGui-Python",
-            version="1.0.0",
-            width=1280,
-            height=720,
-            description="An example application using Dear ImGui with GLFW and OpenGL."
+        config = AppConfiguration(
+            app_name="DearImGui-Python",
+            window_width=1280,
+            window_height=720,
+            app_description="An example application using Dear ImGui with GLFW and OpenGL."
         )
-        app = Application(spec)
+        app = Application(config)
         app.Run()
 
 if __name__ == "__main__":
