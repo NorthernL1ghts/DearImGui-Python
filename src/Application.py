@@ -214,14 +214,15 @@ class Application:
         return glfw.create_window(width, height, name, None, None)
 
     def RegisterDefaultEvents(self):
-        self.EventHandler.RegisterCallback(self.OnAppTick)
-        self.EventHandler.RegisterCallback(self.OnAppUpdate)
+        pass
+        # self.EventHandler.RegisterCallback(self.OnAppTick)
+        # self.EventHandler.RegisterCallback(self.OnAppUpdate)
 
-    def OnAppTick(self):
-        print("OnAppTick - Handle Application Logic")
+    # def OnAppTick(self):
+    #     print("OnAppTick - Handle Application Logic")
 
-    def OnAppUpdate(self):
-        print("OnAppUpdate - Handle Updates")
+    # def OnAppUpdate(self):
+    #     print("OnAppUpdate - Handle Updates")
 
     def Run(self):
         global g_ApplicationRunning
