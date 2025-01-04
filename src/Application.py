@@ -5,6 +5,7 @@ import imgui
 from imgui.integrations.glfw import GlfwRenderer
 from enum import Enum
 import time
+import threading
 
 g_ApplicationRunning = True
 
@@ -168,6 +169,10 @@ class EventHandler:
 
 # Main Application Class
 class Application:
+    # Static variables for threading information
+    s_MainThread = threading.main_thread()
+    s_MainThreadID = s_MainThread.ident
+
     def __init__(self, config):
         self.Config = config
         self.LastUpdateTime = time.time()
@@ -192,6 +197,10 @@ class Application:
 
         # Register default events
         self.RegisterDefaultEvents()
+
+        # Print threading information
+        print(f"Main Thread: {self.s_MainThread}")
+        print(f"Main Thread ID: {self.s_MainThreadID}")
 
     def InitializeGLFW(self):
         return glfw.init()
@@ -236,8 +245,6 @@ class Application:
             sleep_time = self.UpdateInterval - elapsed_time
             if sleep_time > 0:
                 time.sleep(sleep_time)
-
-
 
 # EntryPoint Class to Run the Application
 class EntryPoint:
