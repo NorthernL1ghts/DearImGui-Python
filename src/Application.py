@@ -7,6 +7,7 @@ from enum import Enum
 import time
 import threading
 import platform
+import os
 
 g_ApplicationRunning = True
 VERSION = "1.0.0"
@@ -272,6 +273,19 @@ class Application:
     def GetConfigurationName(self):
         return CURRENT_CONFIGURATION.value
 
+    def AddToSystemPath(self, directory):
+        """Add the directory 'DearImGui-Python' to the system PATH variable if not already present."""
+        directory_name = "DearImGui-Python"
+        current_path = os.environ.get("PATH", "")
+        if directory_name not in current_path:
+            if platform.system() == "Windows":
+                os.environ["PATH"] += f";{directory}"
+            else:
+                os.environ["PATH"] += f":{directory}"
+            print(f"Added {directory_name} directory to PATH")
+        else:
+            print(f"{directory_name} is already in the PATH")
+
 class EntryPoint:
     @staticmethod
     def Main():
@@ -283,6 +297,9 @@ class EntryPoint:
         )
         app = Application(config)
         print(f"Platform: {app.GetPlatformName()}")
+
+        # Add "DearImGui-Python" directory to the PATH
+        app.AddToSystemPath("C:\\Dev\\Projects\\GitHub\\DearImGui-Python")
 
         app.Run()  # Make sure to call the Run method to start the application loop
 
