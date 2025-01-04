@@ -6,9 +6,25 @@ from imgui.integrations.glfw import GlfwRenderer
 from enum import Enum
 import time
 import threading
+import platform
 
 g_ApplicationRunning = True
 VERSION = "1.0.0"
+
+ARCHITECTURE = "X64"
+
+class Configuration(Enum):
+    DEBUG = "Debug"
+    RELEASE = "Release"
+    DIST = "Dist"
+
+CURRENT_CONFIGURATION = Configuration.DEBUG
+
+PLATFORM = {
+    "Windows": "PLATFORM_WINDOWS",
+    "Linux": "PLATFORM_LINUX",
+    "Darwin": "PLATFORM_MACOS"
+}.get(platform.system(), "PLATFORM_UNKNOWN")
 
 class KeyCodes(Enum):
     SPACE = glfw.KEY_SPACE
@@ -125,7 +141,7 @@ class EventHandler:
             print(f"Unhandled key code: {key}")
 
     def HandleKeyPressEvent(self, key, action, mods):
-        key_name = key.name if key in KeyCodes else glfw.get_key_name(key.value, 0)
+        key_name = key.name if key in KeyCodes else glfw.get_key_name(key, 0)
         action_name = self.GetActionName(action)
         print(f"Key event: {key_name}, action: {action_name}, mods: {mods}")
         if key == KeyCodes.SPACE and action_name == "Press":
