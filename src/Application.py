@@ -8,11 +8,8 @@ import time
 import threading
 
 g_ApplicationRunning = True
-
-# Constant for Version
 VERSION = "1.0.0"
 
-# Key and Mouse Codes Enums
 class KeyCodes(Enum):
     SPACE = glfw.KEY_SPACE
     ENTER = glfw.KEY_ENTER
@@ -59,7 +56,6 @@ class MouseCodes(Enum):
     RIGHT_BUTTON = glfw.MOUSE_BUTTON_RIGHT
     MIDDLE_BUTTON = glfw.MOUSE_BUTTON_MIDDLE
 
-# Application Configuration Class
 class AppConfiguration:
     def __init__(self, app_name, window_width, window_height, app_description):
         self.AppName = app_name
@@ -68,7 +64,6 @@ class AppConfiguration:
         self.WindowHeight = window_height
         self.AppDescription = app_description
 
-# Dear ImGui Integration Class
 class DearImGuiRenderer:
     def __init__(self, window):
         self.Window = window
@@ -94,7 +89,6 @@ class DearImGuiRenderer:
     def Cleanup(self):
         self.RendererImplementation.shutdown()
 
-# Event Handling Class
 class EventHandler:
     def __init__(self, window):
         self.Window = window
@@ -110,7 +104,7 @@ class EventHandler:
         self.EventCallbacks.append(callback)
 
     def ProcessEvents(self):
-        glfw.poll_events()  # Ensures events are processed
+        glfw.poll_events()
         for callback in self.EventCallbacks:
             callback()
 
@@ -167,7 +161,6 @@ class EventHandler:
         else:
             print("Scrolled down!")
 
-# Performance Timers Class
 class PerformanceTimers:
     def __init__(self):
         self.m_WorkerThreadTimers = {}
@@ -182,16 +175,14 @@ class PerformanceTimers:
         else:
             print(f"Timer for thread {thread_name} not found")
 
-# Main Application Class
 class Application:
-    # Static variables for threading information
     s_MainThread = threading.main_thread()
     s_MainThreadID = s_MainThread.ident
 
     def __init__(self, config):
         self.Config = config
         self.LastUpdateTime = time.time()
-        self.UpdateInterval = 1.0 / 60.0  # 60 FPS
+        self.UpdateInterval = 1.0 / 60.0
         self.LastEventTime = time.time()
         self.PerformanceTimers = PerformanceTimers()
 
@@ -211,10 +202,8 @@ class Application:
         self.DearImGuiRenderer.SetupDearImGui()
         self.EventHandler = EventHandler(self.Window)
 
-        # Register default events
         self.RegisterDefaultEvents()
 
-        # Print threading information
         print(f"Main Thread: {self.s_MainThread}")
         print(f"Main Thread ID: {self.s_MainThreadID}")
 
@@ -225,16 +214,13 @@ class Application:
         return glfw.create_window(width, height, name, None, None)
 
     def RegisterDefaultEvents(self):
-        # Register custom events for application ticks and updates
         self.EventHandler.RegisterCallback(self.OnAppTick)
         self.EventHandler.RegisterCallback(self.OnAppUpdate)
 
     def OnAppTick(self):
-        """Called every frame to handle logic at 60 FPS."""
         print("OnAppTick - Handle Application Logic")
 
     def OnAppUpdate(self):
-        """Called every frame to handle updates at 60 FPS."""
         print("OnAppUpdate - Handle Updates")
 
     def Run(self):
@@ -243,26 +229,20 @@ class Application:
             current_time = time.time()
             elapsed_time = current_time - self.LastUpdateTime
 
-            # Only call events when enough time has passed (60 FPS)
             if elapsed_time >= self.UpdateInterval:
                 self.EventHandler.ProcessEvents()
-
-                # Update UI and application state
                 self.DearImGuiRenderer.RenderUI(self.Config)
 
                 gl.glClearColor(1.0, 0.0, 1.0, 1.0)
                 gl.glClear(gl.GL_COLOR_BUFFER_BIT)
                 glfw.swap_buffers(self.Window)
 
-                # Update the last time to current
                 self.LastUpdateTime = current_time
 
-            # Ensure that sleep length is non-negative
             sleep_time = self.UpdateInterval - elapsed_time
             if sleep_time > 0:
                 time.sleep(sleep_time)
 
-# EntryPoint Class to Run the Application
 class EntryPoint:
     @staticmethod
     def Main():
