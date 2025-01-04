@@ -225,14 +225,16 @@ class Application:
 
     def InitializeGLFW(self):
         if not glfw.init():
-            print("GLFW failed to initialize")
+            print("GLFW failed to initialize.")
             return False
         return True
 
     def CreateWindow(self, width, height, name):
         window = glfw.create_window(width, height, name, None, None)
         if not window:
-            print("Failed to create window")
+            print(f"Window creation failed: {name}")
+            glfw.terminate()
+            return None
         return window
 
     def RegisterDefaultEvents(self):
@@ -248,7 +250,8 @@ class Application:
                 self.EventHandler.ProcessEvents()
                 self.DearImGuiRenderer.RenderUI(self.Config)
 
-                gl.glClearColor(1.0, 0.0, 1.0, 1.0)
+                # Set the background color to dark gray
+                gl.glClearColor(0.2, 0.2, 0.2, 1.0)  # Dark Gray
                 gl.glClear(gl.GL_COLOR_BUFFER_BIT)
                 glfw.swap_buffers(self.Window)
 
