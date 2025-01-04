@@ -110,11 +110,8 @@ class EventHandler:
         self.Window = window
         self.EventCallbacks = []
 
-        glfw.set_window_size_callback(self.Window, self.OnWindowResize)
-        glfw.set_window_close_callback(self.Window, self.OnWindowClose)
-        glfw.set_key_callback(self.Window, self.OnKeyPress)
-        glfw.set_mouse_button_callback(self.Window, self.OnMouseClick)
-        glfw.set_scroll_callback(self.Window, self.OnMouseScroll)
+        # Call SetCallbacks to register all events
+        self.SetCallbacks()
 
     def RegisterCallback(self, callback):
         self.EventCallbacks.append(callback)
@@ -123,6 +120,14 @@ class EventHandler:
         glfw.poll_events()
         for callback in self.EventCallbacks:
             callback()
+
+    def SetCallbacks(self):
+        '''Register all event callbacks'''
+        glfw.set_window_size_callback(self.Window, self.OnWindowResize)
+        glfw.set_window_close_callback(self.Window, self.OnWindowClose)
+        glfw.set_key_callback(self.Window, self.OnKeyPress)
+        glfw.set_mouse_button_callback(self.Window, self.OnMouseClick)
+        glfw.set_scroll_callback(self.Window, self.OnMouseScroll)
 
     def OnWindowResize(self, window, width, height):
         print(f"Window resized: {width}x{height}")
@@ -176,6 +181,7 @@ class EventHandler:
             print("Scrolled up!")
         else:
             print("Scrolled down!")
+
 
 class PerformanceTimers:
     def __init__(self):
