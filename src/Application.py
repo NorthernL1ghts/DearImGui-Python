@@ -224,21 +224,19 @@ class Application:
         print(f"Main Thread ID: {self.s_MainThreadID}")
 
     def InitializeGLFW(self):
-        return glfw.init()
+        if not glfw.init():
+            print("GLFW failed to initialize")
+            return False
+        return True
 
     def CreateWindow(self, width, height, name):
-        return glfw.create_window(width, height, name, None, None)
+        window = glfw.create_window(width, height, name, None, None)
+        if not window:
+            print("Failed to create window")
+        return window
 
     def RegisterDefaultEvents(self):
         pass
-        # self.EventHandler.RegisterCallback(self.OnAppTick)
-        # self.EventHandler.RegisterCallback(self.OnAppUpdate)
-
-    # def OnAppTick(self):
-    #     print("OnAppTick - Handle Application Logic")
-
-    # def OnAppUpdate(self):
-    #     print("OnAppUpdate - Handle Updates")
 
     def Run(self):
         global g_ApplicationRunning
@@ -260,6 +258,12 @@ class Application:
             if sleep_time > 0:
                 time.sleep(sleep_time)
 
+    def GetPlatformName(self):
+        return PLATFORM
+
+    def GetConfigurationName(self):
+        return CURRENT_CONFIGURATION.value
+
 class EntryPoint:
     @staticmethod
     def Main():
@@ -270,6 +274,7 @@ class EntryPoint:
             app_description="An example application using Dear ImGui with GLFW and OpenGL."
         )
         app = Application(config)
+        print(f"Platform: {app.GetPlatformName()}")
         app.Run()
 
 if __name__ == "__main__":
