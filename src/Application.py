@@ -110,8 +110,14 @@ class EventHandler:
         self.Window = window
         self.EventCallbacks = []
 
-        # Call SetCallbacks to register all events
         self.SetCallbacks()
+
+    def SetCallbacks(self):
+        glfw.set_window_size_callback(self.Window, self.OnWindowResize)
+        glfw.set_window_close_callback(self.Window, self.OnWindowClose)
+        glfw.set_key_callback(self.Window, self.OnKeyPress)
+        glfw.set_mouse_button_callback(self.Window, self.OnMouseClick)
+        glfw.set_scroll_callback(self.Window, self.OnMouseScroll)
 
     def RegisterCallback(self, callback):
         self.EventCallbacks.append(callback)
@@ -120,14 +126,6 @@ class EventHandler:
         glfw.poll_events()
         for callback in self.EventCallbacks:
             callback()
-
-    def SetCallbacks(self):
-        '''Register all event callbacks'''
-        glfw.set_window_size_callback(self.Window, self.OnWindowResize)
-        glfw.set_window_close_callback(self.Window, self.OnWindowClose)
-        glfw.set_key_callback(self.Window, self.OnKeyPress)
-        glfw.set_mouse_button_callback(self.Window, self.OnMouseClick)
-        glfw.set_scroll_callback(self.Window, self.OnMouseScroll)
 
     def OnWindowResize(self, window, width, height):
         print(f"Window resized: {width}x{height}")
@@ -182,7 +180,6 @@ class EventHandler:
         else:
             print("Scrolled down!")
 
-
 class PerformanceTimers:
     def __init__(self):
         self.m_WorkerThreadTimers = {}
@@ -231,20 +228,23 @@ class Application:
 
     def InitializeGLFW(self):
         if not glfw.init():
-            print("GLFW failed to initialize.")
             return False
         return True
 
     def CreateWindow(self, width, height, name):
         window = glfw.create_window(width, height, name, None, None)
         if not window:
-            print(f"Window creation failed: {name}")
             glfw.terminate()
+            print("Failed to create GLFW window!")
             return None
         return window
 
     def RegisterDefaultEvents(self):
         pass
+
+    def GetTime(self):
+        """Returns the time in seconds since the application started."""
+        return time.time() - self.LastUpdateTime
 
     def Run(self):
         global g_ApplicationRunning
@@ -256,8 +256,7 @@ class Application:
                 self.EventHandler.ProcessEvents()
                 self.DearImGuiRenderer.RenderUI(self.Config)
 
-                # Set the background color to dark gray
-                gl.glClearColor(0.2, 0.2, 0.2, 1.0)  # Dark Gray
+                gl.glClearColor(1.0, 0.0, 1.0, 1.0)
                 gl.glClear(gl.GL_COLOR_BUFFER_BIT)
                 glfw.swap_buffers(self.Window)
 
@@ -284,7 +283,8 @@ class EntryPoint:
         )
         app = Application(config)
         print(f"Platform: {app.GetPlatformName()}")
-        app.Run()
+
+        app.Run()  # Make sure to call the Run method to start the application loop
 
 if __name__ == "__main__":
     EntryPoint.Main()
