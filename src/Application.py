@@ -73,13 +73,13 @@ class MouseCodes(Enum):
     RIGHT_BUTTON = glfw.MOUSE_BUTTON_RIGHT
     MIDDLE_BUTTON = glfw.MOUSE_BUTTON_MIDDLE
 
-class AppConfiguration:
-    def __init__(self, app_name, window_width, window_height, app_description):
-        self.AppName = app_name
+class ApplicationConfiguration:
+    def __init__(self, application_name, window_width, window_height, application_description):
+        self.Name = application_name
         self.Version = VERSION
         self.WindowWidth = window_width
         self.WindowHeight = window_height
-        self.AppDescription = app_description
+        self.ApplicationDescription = application_description
 
 class DearImGuiRenderer:
     def __init__(self, window):
@@ -95,9 +95,9 @@ class DearImGuiRenderer:
         imgui.new_frame()
 
         imgui.begin("Application Info")
-        imgui.text(f"App Name: {config.AppName}")
+        imgui.text(f"Application Name: {config.Name}")
         imgui.text(f"Version: {config.Version}")
-        imgui.text(f"Description: {config.AppDescription}")
+        imgui.text(f"Description: {config.ApplicationDescription}")
         imgui.end()
 
         imgui.render()
@@ -105,7 +105,6 @@ class DearImGuiRenderer:
 
     def Cleanup(self):
         self.RendererImplementation.shutdown()
-
 class EventHandler:
     def __init__(self, window):
         self.Window = window
@@ -210,7 +209,7 @@ class Application:
             print("Failed to initialize GLFW")
             sys.exit(1)
 
-        self.Window = self.CreateWindow(self.Config.WindowWidth, self.Config.WindowHeight, self.Config.AppName)
+        self.Window = self.CreateWindow(self.Config.WindowWidth, self.Config.WindowHeight, self.Config.Name)
         if not self.Window:
             glfw.terminate()
             print("Failed to create window")
@@ -289,11 +288,11 @@ class Application:
 class EntryPoint:
     @staticmethod
     def Main():
-        config = AppConfiguration(
-            app_name="DearImGui-Python",
+        config = ApplicationConfiguration(
+            application_name="DearImGui-Python",
             window_width=1280,
             window_height=720,
-            app_description="An example application using Dear ImGui with GLFW and OpenGL."
+            application_description="An example application using Dear ImGui with GLFW and OpenGL."
         )
         app = Application(config)
         print(f"Platform: {app.GetPlatformName()}")
@@ -301,7 +300,7 @@ class EntryPoint:
         # Add "DearImGui-Python" directory to the PATH
         app.AddToSystemPath("C:\\Dev\\Projects\\GitHub\\DearImGui-Python")
 
-        app.Run()  # Make sure to call the Run method to start the application loop
+        app.Run()
 
 if __name__ == "__main__":
     EntryPoint.Main()
