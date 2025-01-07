@@ -15,7 +15,7 @@ g_ApplicationRunning = True
 class ApplicationSpecification:
     def __init__(self, name, version, author, description, window_height, window_width):
         self.Name = name
-        self.Version = version
+        self.Version = VERSION
         self.Author = author
         self.Description = description
         self.WindowHeight = window_height
@@ -91,7 +91,7 @@ class EntryPoint:
     def Main():
         spec = ApplicationSpecification(
             name="DearImGui-Python",
-            version="1.0",
+            version=VERSION,
             author="NorthernL1ghts",
             description="An example application using Dear ImGui with GLFW and OpenGL.",
             window_height=720,
