@@ -12,6 +12,15 @@ from Configuration import ApplicationConfiguration, VERSION, PLATFORM, CURRENT_C
 
 g_ApplicationRunning = True
 
+class ApplicationSpecification:
+    def __init__(self, name, version, author, description, window_height, window_width):
+        self.Name = name
+        self.Version = version
+        self.Author = author
+        self.Description = description
+        self.WindowHeight = window_height
+        self.WindowWidth = window_width
+
 class Application:
     s_MainThread = threading.main_thread()
     s_MainThreadID = s_MainThread.ident
@@ -77,15 +86,23 @@ class Application:
     def GetPlatformName(self):
         return platform.system()  # Return the platform (e.g., "Windows", "Linux")
 
-
 class EntryPoint:
     @staticmethod
     def Main():
-        config = ApplicationConfiguration(
-            application_name="DearImGui-Python",
-            window_width=1280,
+        spec = ApplicationSpecification(
+            name="DearImGui-Python",
+            version="1.0",
+            author="NorthernL1ghts",
+            description="An example application using Dear ImGui with GLFW and OpenGL.",
             window_height=720,
-            application_description="An example application using Dear ImGui with GLFW and OpenGL."
+            window_width=1280
+        )
+
+        config = ApplicationConfiguration(
+            application_name=spec.Name,
+            window_width=spec.WindowWidth,
+            window_height=spec.WindowHeight,
+            application_description=spec.Description
         )
         app = Application(config)
         print(f"Platform: {app.GetPlatformName()}")  # This will now print the platform name
@@ -93,7 +110,6 @@ class EntryPoint:
         app.AddToSystemPath("C:\\Dev\\Projects\\GitHub\\DearImGui-Python")
 
         app.Run()
-
 
 if __name__ == "__main__":
     EntryPoint.Main()
