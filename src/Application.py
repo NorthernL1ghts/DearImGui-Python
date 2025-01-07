@@ -1,7 +1,7 @@
 import sys
 import time
 import threading
-import platform  # Importing the platform module
+import platform
 import os
 from OpenGL import GL as gl  # Importing OpenGL module for OpenGL functions
 from Window import Window
@@ -18,9 +18,9 @@ class Application:
 
     def __init__(self, config):
         self.Config = config
-        self.LastUpdateTime = time.time()
+        self.LastUpdateTime = time.perf_counter()  # More precise time measurement
         self.UpdateInterval = 1.0 / 60.0
-        self.LastEventTime = time.time()
+        self.LastEventTime = time.perf_counter()
         self.PerformanceTimers = PerformanceTimers()
 
         self.WindowInstance = Window(self.Config)
@@ -36,12 +36,12 @@ class Application:
         print(f"Main Thread ID: {self.s_MainThreadID}")
 
     def GetTime(self):
-        return time.time() - self.LastUpdateTime
+        return time.perf_counter() - self.LastUpdateTime
 
     def Run(self):
         global g_ApplicationRunning
         while not self.WindowInstance.ShouldClose() and g_ApplicationRunning:
-            current_time = time.time()
+            current_time = time.perf_counter()
             elapsed_time = current_time - self.LastUpdateTime
 
             if elapsed_time >= self.UpdateInterval:
@@ -59,7 +59,11 @@ class Application:
                 time.sleep(sleep_time)
 
     def AddToSystemPath(self, directory):
-        directory_name = "DearImGui-Python"
+        if not os.path.isdir(directory):
+            print(f"Directory {directory} doesn't exist")
+            return
+
+        directory_name = os.path.basename(directory)  # Get the directory name dynamically
         current_path = os.environ.get("PATH", "")
         if directory_name not in current_path:
             if platform.system() == "Windows":
@@ -72,6 +76,7 @@ class Application:
 
     def GetPlatformName(self):
         return platform.system()  # Return the platform (e.g., "Windows", "Linux")
+
 
 class EntryPoint:
     @staticmethod
@@ -88,6 +93,7 @@ class EntryPoint:
         app.AddToSystemPath("C:\\Dev\\Projects\\GitHub\\DearImGui-Python")
 
         app.Run()
+
 
 if __name__ == "__main__":
     EntryPoint.Main()

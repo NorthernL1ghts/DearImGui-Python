@@ -1,6 +1,8 @@
 import glfw
 from KeyCodes import KeyCodes
 from MouseCodes import MouseCodes
+from OpenGL import GL as gl  # Importing OpenGL module for OpenGL functions
+
 
 class Event:
     def __init__(self, window):

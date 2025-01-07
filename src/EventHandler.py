@@ -24,12 +24,14 @@ class EventHandler:
             callback()
 
     def OnWindowResize(self, window, width, height):
-        print(f"Window resized: {width}x{height}")
+        event_name = "OnWindowResizeEvent"
+        print(f"{event_name} triggered: Window resized to {width}x{height}")
         gl.glViewport(0, 0, width, height)
 
     def OnWindowClose(self, window):
+        event_name = "OnWindowCloseEvent"
         global g_ApplicationRunning
-        print("Window is closing")
+        print(f"{event_name} triggered: Window is closing")
         g_ApplicationRunning = False
 
     def OnKeyPress(self, window, key, scancode, action, mods):
@@ -40,9 +42,10 @@ class EventHandler:
             print(f"Unhandled key code: {key}")
 
     def HandleKeyPressEvent(self, key, action, mods):
+        event_name = "OnKeyPressEvent"
         key_name = key.name if key in KeyCodes else glfw.get_key_name(key, 0)
         action_name = self.GetActionName(action)
-        print(f"Key event: {key_name}, action: {action_name}, mods: {mods}")
+        print(f"{event_name} triggered: Key event: {key_name}, action: {action_name}, mods: {mods}")
         if key == KeyCodes.SPACE and action_name == "Press":
             print("Space key was pressed!")
         elif key == KeyCodes.ENTER and action_name == "Press":
@@ -57,20 +60,26 @@ class EventHandler:
         return action_names.get(action, "Unknown")
 
     def OnMouseClick(self, window, button, action, mods):
+        event_name = "OnMouseClickEvent"
         if action == glfw.PRESS:
             self.HandleMouseClickEvent(MouseCodes(button))
+            print(f"{event_name} triggered: Mouse button {button} pressed")
 
     def HandleMouseClickEvent(self, button):
+        event_name = "HandleMouseClickEvent"
         button_name = button.name if button in MouseCodes else "Unknown"
-        print(f"Mouse button clicked: {button_name}")
+        print(f"{event_name} triggered: Mouse button clicked: {button_name}")
         if button == MouseCodes.LEFT_BUTTON:
             print("Left mouse button clicked!")
 
     def OnMouseScroll(self, window, xoffset, yoffset):
+        event_name = "OnMouseScrollEvent"
         self.HandleMouseScrollEvent(xoffset, yoffset)
+        print(f"{event_name} triggered: Scrolled xoffset={xoffset}, yoffset={yoffset}")
 
     def HandleMouseScrollEvent(self, xoffset, yoffset):
-        print(f"Scrolled: xoffset={xoffset}, yoffset={yoffset}")
+        event_name = "HandleMouseScrollEvent"
+        print(f"{event_name} triggered: Scrolled: xoffset={xoffset}, yoffset={yoffset}")
         if yoffset > 0:
             print("Scrolled up!")
         else:
