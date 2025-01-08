@@ -1,4 +1,5 @@
 import sys
+import keyboard
 import time
 import threading
 import platform
@@ -12,6 +13,7 @@ from Configuration import ApplicationConfiguration, VERSION, PLATFORM, CURRENT_C
 
 g_ApplicationRunning = True
 
+
 class ApplicationSpecification:
     def __init__(self, name, version, author, description, window_height, window_width):
         self.Name = name
@@ -20,6 +22,7 @@ class ApplicationSpecification:
         self.Description = description
         self.WindowHeight = window_height
         self.WindowWidth = window_width
+
 
 class Application:
     s_MainThread = threading.main_thread()
@@ -50,11 +53,16 @@ class Application:
     def Run(self):
         global g_ApplicationRunning
         while not self.WindowInstance.ShouldClose() and g_ApplicationRunning:
+            # Check if the ESC key is pressed
+            if keyboard.is_pressed("esc"):
+                print("ESC pressed. Exiting application.")
+                g_ApplicationRunning = False
+                break
+
             current_time = time.perf_counter()
             elapsed_time = current_time - self.LastUpdateTime
 
             if elapsed_time >= self.UpdateInterval:
-                self.EventHandler.ProcessEvents()
                 self.DearImGuiRenderer.RenderUI(self.Config)
 
                 gl.glClearColor(1.0, 0.0, 1.0, 1.0)  # Use the OpenGL function
@@ -86,6 +94,7 @@ class Application:
     def GetPlatformName(self):
         return platform.system()  # Return the platform (e.g., "Windows", "Linux")
 
+
 class EntryPoint:
     @staticmethod
     def Main():
@@ -110,6 +119,7 @@ class EntryPoint:
         app.AddToSystemPath("C:\\Dev\\Projects\\GitHub\\DearImGui-Python")
 
         app.Run()
+
 
 if __name__ == "__main__":
     EntryPoint.Main()
